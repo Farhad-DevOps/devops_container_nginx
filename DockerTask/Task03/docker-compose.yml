@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+#    restart: unless-stopped
+    ports:
+      - "8084:80"  # Map host port 8080 to container port 80
+    environment:
+      WORDPRESS_DB_HOST: db:3306        # MySQL service hostname and port
+      WORDPRESS_DB_USER: wordpress_user # MySQL username
+      WORDPRESS_DB_PASSWORD: secure_password # MySQL password
+      WORDPRESS_DB_NAME: wordpress_db   # MySQL database name
+    depends_on:
+      - db                              # Ensure MySQL service starts first
+    restart: unless-stopped
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+#    restart: unless-stopped
+    volumes:
+      - mysql_data:/var/lib/mysql       # Persist MySQL data
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: wordpress_db      # WordPress database name
+      MYSQL_USER: wordpress_user        # WordPress database user
+      MYSQL_PASSWORD: secure_password   # WordPress database password
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
